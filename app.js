@@ -1,9 +1,10 @@
 const express = require("express");
-const { default: mongoose } = require("mongoose");
-
+const mongoose = require("mongoose");
+const bookRoutes = require("./routes/bookRoutes");
 const app = express();
 app.use(express.json())
 
+app.use("/books", bookRoutes)
 
 // const books = [
 //     { id: 1, title: "Atomic Habits", author: "James Clear" },
@@ -54,6 +55,23 @@ app.use(express.json())
 //     const deletedBook = books.splice(bookIndex, 1);
 //     res.json({ message: "Book deleted", deleted: deletedBook })
 // })
+
+mongoose.connect("mongodb://127.0.0.1:27017/bookstore")
+    .then(() => console.log("✅ MongoDB connected locally"))
+    .catch(() => console.error("❌ Connection error:", err))
+
+
+
+
+app.get("/", (req, res) => {
+    res.send("Local Bookstore API is working")
+
+})
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: "Something went worng!" })
+})
 
 app.listen(3000, () => {
     console.log("Book store Api running at http://Localhost:3000");
