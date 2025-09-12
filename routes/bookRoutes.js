@@ -7,14 +7,11 @@ const router = express.Router();
 
 
 router.post("/", async (req, res) => {
-    try {
-        const newBook = new Book(req.body);
-        await newBook.save()
-        res.status(201).json(newBook)
-    } catch {
-        res.status(500).json({ error: err.message })
-    }
-})
+    const book = new Book(req.body);
+    await book.save();
+    res.status(201).json(book);
+});
+
 
 router.get("/", async (req, res) => {
     const books = await Book.find();
