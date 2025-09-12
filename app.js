@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bookRoutes = require("./routes/bookRoutes");
+const authRoutes = require("./routes/authRoutes");
+const auth = require("./middleware/authMiddlerware");
 const app = express();
 app.use(express.json())
 
@@ -60,18 +62,25 @@ mongoose.connect("mongodb://127.0.0.1:27017/bookstore")
     .then(() => console.log("✅ MongoDB connected locally"))
     .catch(() => console.error("❌ Connection error:", err))
 
+// ROutes
+app.use("/auth", authRoutes)
 
 
 
-app.get("/", (req, res) => {
-    res.send("Local Bookstore API is working")
-
+// Example of protected route
+app.get("/secret", auth, (req, res) => {
+    res.json({ message: "Welcome to secret route", user: req.user })
 })
 
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: "Something went worng!" })
-})
+// app.get("/", (req, res) => {
+//     res.send("Local Bookstore API is working")
+
+// })
+
+// app.use((err, req, res, next) => {
+//     console.error(err.stack);
+//     res.status(500).json({ error: "Something went worng!" })
+// })
 
 app.listen(3000, () => {
     console.log("Book store Api running at http://Localhost:3000");
