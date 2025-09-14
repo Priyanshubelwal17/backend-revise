@@ -89,4 +89,47 @@ router.get("/search/:keyword", async (req, res) => {
         next(err)
     }
 })
+router.get("/advanced/query", async (req, res) => {
+    try {
+        //Query Parametes (Postman ya URL se aayenge)
+        const { sortBy, order, page, limit, keyword } = req.query;
+
+        // 1. Search filter (optional)
+        let filter = {};
+        if (keyword) {
+            filter.title = { $regex: keyword, $options: "i" }
+        }
+
+        // 2. Sorting setup
+        let sortOptions = {};
+        if (sortBy) {
+            //Default asccending (1),descending (-1) agar order = desc
+            sortOptions[sortBy] = order === "desc" ? -1 : 1
+        }
+
+        // 3. Pagination Setup
+        const pageNum = parseInt(page) || 1;
+        const limitNum = parseInt(limit) || 5;
+        const skip = (pageNum - 1) * limitNum;
+
+        // 4. Query execute
+        const notes = await Note.find(filter)
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(limitNum)
+
+        // 5. Total count for pagination info
+        const totalNotes = await Note.countDocuments(filter);
+
+        res.json({
+            total: totalNotes,
+            page: pageNum,
+            limit: limitNum,
+            resuts: notes.length,
+            notes
+        })
+    } catch (err) {
+        next(err)
+    }
+})
 module.exports = router;
