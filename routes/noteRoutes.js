@@ -69,4 +69,24 @@ router.delete("/:id", async (req, res, next) => {
         next(err)
     }
 })
+router.get("/search/:keyword", async (req, res) => {
+    try {
+        const keyword = req.params.keyword;
+
+        //MongoDB regex query -> casse- insensitive search 
+        const notes = await Note.find({
+            title: { $regex: keyword, $options: "i" }
+        });
+        if (notes.length === 0) {
+            return res.status(404).json({ message: "No notes found with that title" })
+
+
+        }
+
+        res.json(notes)
+
+    } catch (err) {
+        next(err)
+    }
+})
 module.exports = router;
