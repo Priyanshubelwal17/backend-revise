@@ -1,16 +1,21 @@
+require("dotenv").config()
 const express = require("express");
+const app = express();
+const path = require("path");
 const mongoose = require("mongoose");
+const morgan = require("morgan");
+
+const auth = require("./middleware/authMiddlerware");
+const rateLimit = require("express-rate-limit");
+
+
 const bookRoutes = require("./routes/bookRoutes");
 const authRoutes = require("./routes/authRoutes");
-const auth = require("./middleware/authMiddlerware");
-const app = express();
-app.use(express.json())
-require("dotenv").config()
-app.use("/books", bookRoutes)
-const rateLimit = require("express-rate-limit");
-const morgan = require("morgan");
 const noteRoutes = require("./routes/noteRoutes");
+const imageRoutes = require("./routes/imageRoutes");
 
+app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // const books = [
 //     { id: 1, title: "Atomic Habits", author: "James Clear" },
 //     { id: 2, title: "Ikigai", author: "Garcia & Miralles" },
@@ -60,6 +65,7 @@ const noteRoutes = require("./routes/noteRoutes");
 //     const deletedBook = books.splice(bookIndex, 1);
 //     res.json({ message: "Book deleted", deleted: deletedBook })
 // })
+app.use("/books", bookRoutes)
 
 //  ✅ Body parser
 app.use(express.json())
@@ -97,6 +103,8 @@ app.use("/notes", noteRoutes)
 app.get("/", (req, res) => {
     res.send("Notes API Running with Middleware")
 })
+
+app.use("/images", imageRoutes);
 
 app.use((err, req, res, next) => {
     console.error("🔥 Error:", err.message);

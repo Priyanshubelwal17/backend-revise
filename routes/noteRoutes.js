@@ -69,7 +69,7 @@ router.delete("/:id", async (req, res, next) => {
         next(err)
     }
 })
-router.get("/search/:keyword", async (req, res) => {
+router.get("/search/:keyword", async (req, res, next) => {
     try {
         const keyword = req.params.keyword;
 
@@ -89,7 +89,7 @@ router.get("/search/:keyword", async (req, res) => {
         next(err)
     }
 })
-router.get("/advanced/query", async (req, res) => {
+router.get("/advanced/query", async (req, res, next) => {
     try {
         //Query Parametes (Postman ya URL se aayenge)
         const { sortBy, order, page, limit, keyword } = req.query;
